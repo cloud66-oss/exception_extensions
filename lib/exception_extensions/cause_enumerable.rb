@@ -1,7 +1,7 @@
 module ExceptionExtensions
   module CauseEnumerable
     def self.included(klass)
-      raise "The ::ExceptionExtensions::CauseEnumerable module is only applicable to ::Exception types" unless klass.is_a?(::Exception)
+      raise "The ::ExceptionExtensions::CauseEnumerable module is only applicable to ::Exception types" unless klass.ancestors.include?(::Exception)
       klass.class_eval do
         include Enumerable
         attr_reader :causes
