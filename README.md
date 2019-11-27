@@ -18,7 +18,7 @@ gem install exception_extensions
 If using `bundler`, add to your `Gemfile`:
 
 ```
-gem 'rails'
+gem 'exception_extensions'
 ```
 
 ## Use
