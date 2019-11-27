@@ -1,0 +1,5 @@
+# ensure all types are loaded
+require_relative 'exception_extensions/cause_enumerable'
+require_relative 'exception_extensions/standard_error_collection'
+require_relative 'exception_extensions/exception_traverser'
+require_relative 'exception_extensions/exception_path_traverser'
