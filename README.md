@@ -51,12 +51,25 @@ end
 begin
   the_operation  
 rescue => exc
-  # dump the message
-  puts exc.message
+  # output exception
+  puts "exception0 class: #{exc.class.name}"
+  puts "exception0 message: #{exc.message}"
   # we can look at the collection of exception causes directly
   # for Exceptions that implement ::ExceptionExtensions::CauseEnumerable
-  puts exc.causes 
+  exc.causes.each_with_index do |cause, idx| 
+    puts "exception#{idx+1} class: #{cause.class.name}"
+    puts "exception#{idx+1} message: #{cause.message}"
+  end
 end
+```
+**OUTPUT** 
+```
+exception0 class: ExceptionExtensions::StandardErrorCollection
+exception0 message: multiple exceptions occurred during the_operation
+exception1 class: ZeroDivisionError
+exception1 message: divided by 0
+exception2 class: ArgumentError
+exception2 message: expected a 1
 ```
 
 ### Example2: Calling the_operation indirectly resulting in an exception chain
@@ -71,9 +84,38 @@ end
 begin
   handle_operations
 rescue => exc
-  # we can create a path traverser for each unique exception path (their may be causes within cause for an exception chain)
+  # now, we create a path traverser for each unique exception path
+  # (there may be causes within cause for an exception chain)
   exception_traverser = ::ExceptionExtensions::ExceptionPathTraverser.new(exc)
-  # now we traverse each unique exception path
-  exception_traverser.each {|exception_path| puts exception_path.join(' => ')}
+  # traverse each unique exception path 
+  exception_traverser.each do |exception_path| 
+    # output exception information
+    exception_path.each_with_index do |exception, idx| 
+      puts "exception#{idx} class: #{exception.class.name}"
+      puts "exception#{idx} message: #{exception.message}"
+    end
+    # output exception information as a chain of messages    
+    puts "JOINED: \"#{exception_path.join(' => ')}\""
+    puts
+  end
 end
+```
+**OUTPUT** 
+```
+exception0 class: RuntimeError
+exception0 message: Unable to handle operations
+exception1 class: ExceptionExtensions::StandardErrorCollection
+exception1 message: multiple exceptions occurred during the_operation
+exception2 class: ZeroDivisionError
+exception2 message: divided by 0
+JOINED: "Unable to handle operations => multiple exceptions occurred during the_operation => divided by 0"
+
+exception0 class: RuntimeError
+exception0 message: Unable to handle operations
+exception1 class: ExceptionExtensions::StandardErrorCollection
+exception1 message: multiple exceptions occurred during the_operation
+exception2 class: ArgumentError
+exception2 message: expected a 1
+JOINED: "Unable to handle operations => multiple exceptions occurred during the_operation => expected a 1"
+
 ```  
