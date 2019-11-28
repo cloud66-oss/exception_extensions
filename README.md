@@ -21,6 +21,59 @@ If using `bundler`, add to your `Gemfile`:
 gem 'exception_extensions'
 ```
 
-## Use
+## Usage Examples
 
-TBD
+### Assume the following operation
+```
+def the_operation
+  # collection of exceptions
+  exceptions = []
+  (1..2).each do |i|
+    begin
+      if i == 1
+        # cause "divided by 0" error
+        1/0
+      else
+        # cause "ArgumentError"
+        raise ArgumentError.new('expected a 1')
+      end
+    rescue => exc
+      exceptions << exc
+    end
+  end
+  # raise a collection exception
+  raise ::ExceptionExtensions::StandardErrorCollection.new(exceptions, 'multiple exceptions occurred during the_operation') unless exceptions.empty?
+end
+```
+
+### Example1: Calling the_operation directly
+```
+begin
+  the_operation  
+rescue => exc
+  # dump the message
+  puts exc.message
+  # we can look at the collection of exception causes directly
+  # for Exceptions that implement ::ExceptionExtensions::CauseEnumerable
+  puts exc.causes 
+end
+```
+
+### Example2: Calling the_operation indirectly resulting in an exception chain
+```
+# here, we illustrate traversing the exception chain
+def handle_operations
+  the_operation  
+rescue => exc
+  raise "Unable to handle operations"  
+end
+
+begin
+  handle_operations
+rescue => exc
+  # we can create a path traverser for each unique exception path (their may be causes within cause for an exception chain)
+  exception_traverser = ::ExceptionExtensions::ExceptionPathTraverser.new(exc)
+  # now we traverse each unique exception path
+  exception_traverser.each {|exception_path| puts exception_path.join(' => ')}
+end
+```  
