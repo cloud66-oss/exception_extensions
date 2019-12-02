@@ -24,7 +24,7 @@ gem 'exception_extensions'
 ## Usage Examples
 
 ### Assume the following operation
-```
+```ruby
 def the_operation
   # collection of exceptions
   exceptions = []
@@ -47,7 +47,7 @@ end
 ```
 
 ### Example1: Calling the_operation directly
-```
+```ruby
 begin
   the_operation  
 rescue => exc
@@ -73,7 +73,7 @@ exception2 message: expected a 1
 ```
 
 ### Example2: Calling the_operation indirectly resulting in an exception chain
-```
+```ruby
 # here, we illustrate traversing the exception chain
 def handle_operations
   the_operation  
