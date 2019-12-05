@@ -1,8 +1,12 @@
 module ExceptionExtensions
   class ExceptionPathTraverser < ExceptionTraverser
     def each(&block)
-      return if @exception.nil?
-      each_internal(@exception, [], &block)
+      if block_given?
+        return if @exception.nil?
+        each_internal(@exception, [], &block)
+      else
+        to_enum(:each)
+      end
     end
 
     private
